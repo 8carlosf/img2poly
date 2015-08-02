@@ -5,7 +5,7 @@ Convert images to 2D polygon 'art'
 
 - [x] Get started
 - [x] get N points from canny edge
-- [ ] get all pixeis inside a given triangle
+- [ ] get all pixels inside a given triangle (generalize to poligons if possible/easy)
 - [ ] extract average/median/other color from a given set of pixels
 - [ ] create delaunay (check scipy built in function) triangulation from a given set of points
 	- [ ] force min angle on delaunay
