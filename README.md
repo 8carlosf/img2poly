@@ -8,6 +8,7 @@ Convert images to 2D polygon 'art'
 - [ ] get all pixels inside a given triangle (generalize to poligons if possible/easy)
 - [ ] extract average/median/other color from a given set of pixels
 - [ ] implement Poisson Disk Sampling
+	- http://code-spot.co.za/2010/04/07/poisson-disk-sampling-example-code/
 	- http://devmag.org.za/2009/05/03/poisson-disk-sampling/
 	- https://www.jasondavies.com/poisson-disc/
 - [x] create delaunay (check scipy built in function) triangulation from a given set of points
