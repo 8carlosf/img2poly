@@ -35,8 +35,8 @@ def main():
 	points=points[:,[1,0]]
 	tri=Delaunay(points)
 	
-	plt.triplot(points[:,0], points[:,1], tri.simplices.copy())
-	plt.plot(points[:,0], points[:,1], 'o')
+	plt.triplot(points[:,0], (-1)*points[:,1], tri.simplices.copy())
+	#plt.plot(points[:,0], points[:,1], 'o')
 	plt.show()
 	
 if __name__ == "__main__":
