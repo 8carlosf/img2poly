@@ -13,7 +13,8 @@ def main():
 
     img = io.imread(img_path)
     img_gray = color.rgb2gray(img)
-    canny = feature.canny(img_gray, sigma=2)
+    canny = feature.canny(img_gray, sigma=3)
+    print("canny done")
     
     edges = []
     for i in range(len(canny)):
@@ -21,19 +22,27 @@ def main():
             if canny[i][j]:
                 edges += [(i, j)]
 
+    print("canny size: ", len(edges))
     ###plt.imshow(canny, cmap = 'gray')
     #plt.show()
 
     #edges = np.transpose(np.nonzero(canny))
+    uni_points = []
+    block_size = 100
+    for i in range(0, len(canny)-block_size, block_size):
+        for j in range(0, len(canny[0])-block_size, block_size):
+            uni_points += [(i+randint(0, block_size), j+randint(0, block_size))]
 
     np.random.shuffle(edges)
-    points = edges[:n_points]
+    np.random.shuffle(uni_points)
+    
+    points = edges[:n_points] + uni_points[:n_points]
 
     img_points = np.zeros((len(canny), len(canny[0])))
     #img_points[canny] = 255
     for x,y in points:
         img_points[x,y] = 255
-    plt.imshow(img_points, cmap = 'gray')
+    #plt.imshow(img_points, cmap = 'gray')
     #plt.show()
 
     points=np.vstack((points,np.array([
