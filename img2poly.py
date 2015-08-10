@@ -39,7 +39,7 @@ def main():
     np.random.shuffle(uni_points)
     '''
     for i in range(n_points):
-        uni_points += [(randint(0, len(canny)), randint(0, len(canny[0])))]
+        uni_points += [(randint(0, len(canny)-1), randint(0, len(canny[0])-1))]
 
     np.random.shuffle(edges)
     points = edges[:n_points] + uni_points
