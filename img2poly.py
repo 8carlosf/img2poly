@@ -4,12 +4,15 @@ from scipy.spatial import Delaunay, ConvexHull
 from skimage import feature, io, data, color
 from skimage.morphology import convex_hull_image
 import matplotlib.pyplot as plt
-from random import randint
+from random import randint, seed
 
-def main():	
+def main():
     img_path = sys.argv[1]
     n_points = int(sys.argv[2])
     # validate inputs (check if we have enough points in critical places!)
+
+    np.random.seed(8)
+    seed(8)
 
     img = io.imread(img_path)
     img_gray = color.rgb2gray(img)
