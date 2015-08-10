@@ -15,4 +15,5 @@ Convert images to 2D polygon 'art'
 	- [ ] ?force min angle on delaunay
 - [ ] switch edge detection to scikit-image (instead of opencv)
 - [ ] tune edge detection
+- [ ] color average: sqrt(avg(RGBs^2)) or Lab color space
 - [ ] export png and svg result
