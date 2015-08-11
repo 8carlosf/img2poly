@@ -9,8 +9,8 @@ from random import randint, seed
 def main():
     img_path = sys.argv[1]
     n_points = int(sys.argv[2])
+    n_upoints = int(sys.argv[3])
     # validate inputs (check if we have enough points in critical places!)
-
     np.random.seed(8)
     seed(8)
 
@@ -26,7 +26,7 @@ def main():
                 edges += [(i, j)]
 
     print("canny size: ", len(edges))
-    ###plt.imshow(canny, cmap = 'gray')
+    #plt.imshow(canny, cmap = 'gray')
     #plt.show()
 
     #edges = np.transpose(np.nonzero(canny))
@@ -38,7 +38,7 @@ def main():
             uni_points += [(i+randint(0, block_size), j+randint(0, block_size))]
     np.random.shuffle(uni_points)
     '''
-    for i in range(n_points):
+    for i in range(n_upoints):
         uni_points += [(randint(0, len(canny)-1), randint(0, len(canny[0])-1))]
 
     np.random.shuffle(edges)
