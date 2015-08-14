@@ -4,12 +4,68 @@ from scipy.spatial import Delaunay, ConvexHull
 from skimage import feature, io, data, color
 from skimage.morphology import convex_hull_image
 import matplotlib.pyplot as plt
-from random import randint, seed
+from random import randint, seed, uniform
+
+def gen_random_poisson_point(point, min_dist, a, b):
+	while True:
+		rand1 = uniform(0, 1)
+		rand2 = uniform(0, 1)
+		radius = min_dist * (rand1 + 1)
+		angle = 2 * np.pi * rand2
+		x = int(point[0] + radius * np.cos(angle))
+		y = int(point[1] + radius * np.sin(angle))
+		if x >= 0 and x < a and y >= 0 and y < b:
+			return (x, y) 
+
+def checkNeighbours(new_point, grid, min_dist, a, b):
+	k_min = new_point[0] - min_dist
+	k_max = new_point[0] + min_dist
+	k2_min = new_point[1] - min_dist
+	k2_max = new_point[1] + min_dist
+	if k_min < 0:
+		k_min = 0
+	if k_max >= a:
+		k_max = a - 1
+	if k2_min < 0:
+		k2_min = 0
+	if k2_max >= b:
+		k2_max = b - 1
+
+	for i in range(k_min, k_max + 1):
+		for j in range(k2_min, k2_max + 1):
+			if grid[i][j] == 1 and np.sqrt(np.square(new_point[0] - i) + np.square(new_point[1] - j)) < min_dist:
+				return False
+
+	return True
+
+def poisson(min_dist, a, b, n_points):
+	randomQueue = []
+	poisson_points = []
+	grid = np.zeros((a, b))
+
+	first = (randint(0, a - 1), randint(0, b - 1))
+	poisson_points += [first]
+	randomQueue += [first]
+	grid[first[0]][first[1]] = 1
+
+	while len(randomQueue) != 0:
+		print len(randomQueue)
+		point = randomQueue.pop(randint(0, len(randomQueue) - 1))
+		for i in range(0, n_points):
+			new_point = gen_random_poisson_point(point, min_dist, a, b)
+			if grid[new_point[0]][new_point[1]] == 0 and checkNeighbours(new_point, grid, min_dist, a, b) == True:
+				randomQueue += [new_point]
+				poisson_points += [new_point]
+				grid[new_point[0]][new_point[1]] = 1
+
+	return poisson_points
+
 
 def main():
     img_path = sys.argv[1]
     n_points = int(sys.argv[2])
     n_upoints = int(sys.argv[3])
+    min_dist = int(sys.argv[4])
     # validate inputs (check if we have enough points in critical places!)
     np.random.seed(8)
     seed(8)
@@ -30,6 +86,7 @@ def main():
     #plt.show()
 
     #edges = np.transpose(np.nonzero(canny))
+    
     uni_points = []
     '''
     block_size = 100
@@ -38,8 +95,10 @@ def main():
             uni_points += [(i+randint(0, block_size), j+randint(0, block_size))]
     np.random.shuffle(uni_points)
     '''
-    for i in range(n_upoints):
+    '''for i in range(n_upoints):
         uni_points += [(randint(0, len(canny)-1), randint(0, len(canny[0])-1))]
+    '''
+    uni_points = poisson(min_dist, len(canny), len(canny[0]), n_upoints)
 
     np.random.shuffle(edges)
     points = edges[:n_points] + uni_points
