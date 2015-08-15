@@ -1,5 +1,7 @@
+from __future__ import division
 import sys
 import numpy as np
+from math import ceil
 from scipy.spatial import Delaunay, ConvexHull
 from skimage import feature, io, data, color
 from skimage.morphology import convex_hull_image
@@ -49,7 +51,7 @@ def poisson(min_dist, a, b, n_points):
 	grid[first[0]][first[1]] = 1
 
 	while len(randomQueue) != 0:
-		print len(randomQueue)
+		#print(len(randomQueue))
 		point = randomQueue.pop(randint(0, len(randomQueue) - 1))
 		for i in range(0, n_points):
 			new_point = gen_random_poisson_point(point, min_dist, a, b)
@@ -60,6 +62,32 @@ def poisson(min_dist, a, b, n_points):
 
 	return poisson_points
 
+def coords2grid(x, y, cell_size):
+	return (int)(x/cell_size), (int)(y/cell_size)
+
+def checkNeighbourhood(grid, x, y, gx, gy, min_dist, cell_size):
+	cellsAround = [[-1, 0], [1, 0], [0, -1], [0, 1], [1, 1], [1, -1], [-1, 1], [-1, -1], [-1, -2], [0, -2], [1, -2], [-1, 2], [0, 2], [1, 2], [-2, -1], [-2, 0], [-2, 1], [2, -1], [2, 0], [2, 1]]
+	for cell in cellsAround:
+		cx, cy = cell[0] + gx, cell[1] + gy
+		if (cx >= 0 and cy >= 0 and cx < len(grid) and cy < len(grid[0])):
+				if (grid[cx][cy] != None and np.sqrt(np.square(grid[cx][cy][0] - x) + np.square(grid[cx][cy][1] - y)) < min_dist):
+					return False
+	return True
+
+def poisson_filter(points, min_dist, width, height):
+	cell_size = min_dist/np.sqrt(2)
+	grid = [[None] * ceil(width/cell_size) for i in range(ceil(height/cell_size))]
+
+	np.random.shuffle(points)
+	for p in list(points):
+		x, y = p
+		gx, gy = coords2grid(x, y, cell_size)
+		if grid[gx][gy] == None and checkNeighbourhood(grid, x, y, gx, gy, min_dist, cell_size):
+			grid[gx][gy] = p
+		else:
+			points.remove(p)
+
+	return points
 
 def main():
 	img_path = sys.argv[1]
@@ -98,10 +126,15 @@ def main():
 	'''for i in range(n_upoints):
 		uni_points += [(randint(0, len(canny)-1), randint(0, len(canny[0])-1))]
 	'''
+
+	'''
 	uni_points = poisson(min_dist, len(canny), len(canny[0]), n_upoints)
 
 	np.random.shuffle(edges)
-	points = edges[:n_points] + uni_points
+	'''
+	points = poisson_filter(edges, 16, len(canny[0]), len(canny))
+	print("filtered canny size: ", len(points))
+	#points = edges[:n_points] + uni_points
 
 	#img_points = np.zeros((len(canny), len(canny[0])))
 	#img_points[canny] = 255
