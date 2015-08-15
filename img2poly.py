@@ -41,24 +41,30 @@ def checkNeighbours(new_point, grid, min_dist, a, b):
 	return True
 
 def poisson(min_dist, a, b, n_points):
+	cell_size = min_dist/np.sqrt(2)
+	grid = [[None] * int(ceil(b/cell_size)) for i in range(int(ceil(a/cell_size)))]
+
 	randomQueue = []
 	poisson_points = []
-	grid = np.zeros((a, b))
+	#grid = np.zeros((a, b))
 
 	first = (randint(0, a - 1), randint(0, b - 1))
 	poisson_points += [first]
 	randomQueue += [first]
-	grid[first[0]][first[1]] = 1
+	gx, gy = coords2grid(first[0], first[1], cell_size)
+	grid[gx][gy] = first
 
 	while len(randomQueue) != 0:
-		#print(len(randomQueue))
+		print(len(randomQueue))
 		point = randomQueue.pop(randint(0, len(randomQueue) - 1))
 		for i in range(0, n_points):
 			new_point = gen_random_poisson_point(point, min_dist, a, b)
-			if grid[new_point[0]][new_point[1]] == 0 and checkNeighbours(new_point, grid, min_dist, a, b) == True:
+			gx, gy = coords2grid(new_point[0], new_point[1], cell_size)
+			#if grid[gx][gy] == 0 and checkNeighbours(new_point, grid, min_dist, a, b) == True:
+			if grid[gx][gy] == None and checkNeighbourhood(grid, new_point[0], new_point[1], gx, gy, min_dist, cell_size):
 				randomQueue += [new_point]
 				poisson_points += [new_point]
-				grid[new_point[0]][new_point[1]] = 1
+				grid[gx][gy] = new_point
 
 	return poisson_points
 
@@ -76,7 +82,7 @@ def checkNeighbourhood(grid, x, y, gx, gy, min_dist, cell_size):
 
 def poisson_filter(points, min_dist, width, height):
 	cell_size = min_dist/np.sqrt(2)
-	grid = [[None] * ceil(width/cell_size) for i in range(ceil(height/cell_size))]
+	grid = [[None] * int(ceil(width/cell_size)) for i in range(int(ceil(height/cell_size)))]
 
 	np.random.shuffle(points)
 	for p in list(points):
@@ -134,7 +140,9 @@ def main():
 	'''
 	points = poisson_filter(edges, 16, len(canny[0]), len(canny))
 	print("filtered canny size: ", len(points))
-	#points = edges[:n_points] + uni_points
+	uni_points = poisson(min_dist, len(canny), len(canny[0]), n_upoints)
+	print("generated random poisson points: ", len(uni_points))
+	points = edges[:n_points] + uni_points
 
 	#img_points = np.zeros((len(canny), len(canny[0])))
 	#img_points[canny] = 255
