@@ -158,9 +158,20 @@ def main():
 			print("%3d%%" % (100*count/total))
 		in_tri[points[t,0], points[t,1]] = 255
 		chull = convex_hull_image(in_tri)
+		
 		img_points[chull, 0] = np.mean(img_points[chull, 0])
 		img_points[chull, 1] = np.mean(img_points[chull, 1])
 		img_points[chull, 2] = np.mean(img_points[chull, 2])
+		'''
+		img_points[chull, 0] = int(np.mean(np.sqrt(img_points[chull, 0]))**2)
+		img_points[chull, 1] = int(np.mean(np.sqrt(img_points[chull, 1]))**2)
+		img_points[chull, 2] = int(np.mean(np.sqrt(img_points[chull, 2]))**2)
+		'''
+		# reverse sqrt and ^2
+		#img_points[chull, 0] = int(np.sqrt(np.mean(img_points[chull, 0]**2)))
+		#img_points[chull, 1] = int(np.sqrt(np.mean(img_points[chull, 1]**2)))
+		#img_points[chull, 2] = int(np.sqrt(np.mean(img_points[chull, 2]**2)))
+		
 		in_tri[points[t,0], points[t,1]] = 0
 
 	plt.imshow(img_points)
