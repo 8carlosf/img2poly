@@ -167,10 +167,6 @@ def main():
 		img_points[chull, 1] = int(np.mean(np.sqrt(img_points[chull, 1]))**2)
 		img_points[chull, 2] = int(np.mean(np.sqrt(img_points[chull, 2]))**2)
 		'''
-		# reverse sqrt and ^2
-		#img_points[chull, 0] = int(np.sqrt(np.mean(img_points[chull, 0]**2)))
-		#img_points[chull, 1] = int(np.sqrt(np.mean(img_points[chull, 1]**2)))
-		#img_points[chull, 2] = int(np.sqrt(np.mean(img_points[chull, 2]**2)))
 		
 		in_tri[points[t,0], points[t,1]] = 0
 
