@@ -19,27 +19,6 @@ def gen_random_poisson_point(point, min_dist, a, b):
 		if x >= 0 and x < a and y >= 0 and y < b:
 			return (x, y) 
 
-def checkNeighbours(new_point, grid, min_dist, a, b):
-	k_min = new_point[0] - min_dist
-	k_max = new_point[0] + min_dist
-	k2_min = new_point[1] - min_dist
-	k2_max = new_point[1] + min_dist
-	if k_min < 0:
-		k_min = 0
-	if k_max >= a:
-		k_max = a - 1
-	if k2_min < 0:
-		k2_min = 0
-	if k2_max >= b:
-		k2_max = b - 1
-
-	for i in range(k_min, k_max + 1):
-		for j in range(k2_min, k2_max + 1):
-			if grid[i][j] == 1 and np.sqrt(np.square(new_point[0] - i) + np.square(new_point[1] - j)) < min_dist:
-				return False
-
-	return True
-
 def poisson(min_dist, a, b, n_points):
 	cell_size = min_dist/np.sqrt(2)
 	grid = [[None] * int(ceil(b/cell_size)) for i in range(int(ceil(a/cell_size)))]
@@ -55,12 +34,11 @@ def poisson(min_dist, a, b, n_points):
 	grid[gx][gy] = first
 
 	while len(randomQueue) != 0:
-		print(len(randomQueue))
+		#print(len(randomQueue))
 		point = randomQueue.pop(randint(0, len(randomQueue) - 1))
 		for i in range(0, n_points):
 			new_point = gen_random_poisson_point(point, min_dist, a, b)
 			gx, gy = coords2grid(new_point[0], new_point[1], cell_size)
-			#if grid[gx][gy] == 0 and checkNeighbours(new_point, grid, min_dist, a, b) == True:
 			if grid[gx][gy] == None and checkNeighbourhood(grid, new_point[0], new_point[1], gx, gy, min_dist, cell_size):
 				randomQueue += [new_point]
 				poisson_points += [new_point]
@@ -96,10 +74,10 @@ def poisson_filter(points, min_dist, width, height):
 	return points
 
 def main():
+	print("Usage:   python3 img2poly.py <image> <min_dist_canny> <min_dist_extra>\n")
 	img_path = sys.argv[1]
-	n_points = int(sys.argv[2])
-	n_upoints = int(sys.argv[3])
-	min_dist = int(sys.argv[4])
+	min_dist = int(sys.argv[2])
+	min_distX = int(sys.argv[3])
 	# validate inputs (check if we have enough points in critical places!)
 	np.random.seed(8)
 	seed(8)
@@ -138,11 +116,11 @@ def main():
 
 	np.random.shuffle(edges)
 	'''
-	points = poisson_filter(edges, 16, len(canny[0]), len(canny))
+	points = poisson_filter(edges, min_dist, len(canny[0]), len(canny))
 	print("filtered canny size: ", len(points))
-	uni_points = poisson(min_dist, len(canny), len(canny[0]), n_upoints)
+	uni_points = poisson(min_distX, len(canny), len(canny[0]), 16)
 	print("generated random poisson points: ", len(uni_points))
-	points = edges[:n_points] + uni_points
+	points += uni_points
 
 	#img_points = np.zeros((len(canny), len(canny[0])))
 	#img_points[canny] = 255
@@ -172,6 +150,7 @@ def main():
 
 	total = len(tri.simplices)
 	print("#tri: ", total)
+
 	count = 0
 	for t in tri.simplices:
 		count += 1
